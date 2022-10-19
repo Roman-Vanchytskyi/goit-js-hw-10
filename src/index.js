@@ -12,30 +12,36 @@ input.addEventListener('input', debounce(search, DEBOUNCE_DELAY));
 
 function search(e) {
   const searchData = e.target.value.trim();
+  console.log(searchData);
   if (!searchData) {
     list.innerHTML = '';
     info.innerHTML = '';
+    return;
   }
 
   fetchCountries(searchData)
     .then(arr => {
       if (arr.length > 10) {
+        list.innerHTML = '';
+        info.innerHTML = '';
         Notiflix.Notify.info(
           'Too many matches found. Please enter a more specific name.'
         );
       }
       if (arr.length > 1 && arr.length < 11) {
-        const markuplist = createListMarkup(arr);
-        list.innerHTML = markuplist;
+        list.innerHTML = createListMarkup(arr);
+        info.innerHTML = '';
       }
       if (arr.length === 1) {
-        const markupinfo = createInfoMarkup(arr);
-        list.innerHTML = markupinfo;
+        info.innerHTML = createInfoMarkup(arr);
+        list.innerHTML = '';
       }
     })
-    .catch(err =>
-      Notiflix.Notify.failure('Oops, there is no country with that name')
-    );
+    .catch(() => {
+      list.innerHTML = '';
+      info.innerHTML = '';
+      Notiflix.Notify.failure('Oops, there is no country with that name');
+    });
 }
 
 function createListMarkup(arr) {
